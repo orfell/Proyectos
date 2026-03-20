@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socialización de Notas - Formulación y Evaluación de Proyectos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #000;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Buscador */
+        .search-section {
+            background-color: #eef2f5;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .search-input {
+            padding: 10px;
+            width: 70%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 15px;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .search-btn:hover {
+            background-color: #004494;
+        }
+
+        .clear-btn {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            margin-left: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .clear-btn:hover {
+            background-color: #5a6268;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Cabecera del reporte */
+        .report-header {
+            font-weight: bold;
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 30px;
+        }
+
+        /* Estilos tipo tabla/grid de la imagen */
+        .grid-info {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            margin-bottom: 25px;
+        }
+
+        .label {
+            font-weight: bold;
+            padding: 6px 0;
+            font-size: 16px;
+        }
+
+        .value-cell {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            margin-top: -1px; /* Para colapsar los bordes como en Excel */
+            font-size: 16px;
+        }
+
+        /* Notas grid */
+        .grid-notas {
+            display: grid;
+            grid-template-columns: 130px 100px 100px;
+            margin-bottom: 25px;
+        }
+
+        .nota-cell {
+            border: 1px solid #000;
+            padding: 6px 8px;
+            text-align: center;
+            margin-top: -1px;
+            margin-left: -1px;
+            font-size: 16px;
+        }
+
+        .header-cell {
+            font-weight: bold;
+        }
+
+        .porcentaje-cell {
+            background-color: #e0e0e0; /* Fondo gris para los porcentajes */
+        }
+
+        /* Nota Definitiva */
+        .grid-definitiva {
+            display: grid;
+            grid-template-columns: 130px 200px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .definitiva-value {
+            border: 2px solid #2e7d32; /* Borde verde característico */
+            padding: 6px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            background-color: #e8f5e9;
+        }
+
+        #resultado-notas {
+            display: none; /* Oculto por defecto hasta que se busque */
+        }
+
+        /* Responsivo para móviles */
+        @media (max-width: 500px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            .search-input { width: 100%; margin-bottom: 10px; }
+            .search-btn, .clear-btn { margin-left: 0; width: 100%; margin-bottom: 10px;}
+            .grid-info { grid-template-columns: 90px 1fr; }
+            .grid-notas { grid-template-columns: 85px minmax(50px, 1fr) minmax(85px, 1fr); }
+            .grid-definitiva { grid-template-columns: 90px 1fr; }
+            .label, .value-cell, .nota-cell, .definitiva-value { font-size: 13px; padding: 6px 4px; }
+            .report-header { font-size: 14px; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- Zona de Búsqueda -->
+    <div class="search-section">
+        <h3>Consulta de Notas - Estudiantes</h3>
+        <input type="number" id="inputIdentificacion" class="search-input" placeholder="Ingresa la cédula" onkeypress="verificarEnter(event)">
+        <button class="search-btn" onclick="buscarEstudiante()">Consultar</button>
+        <button class="clear-btn" onclick="limpiarBusqueda()">Limpiar</button>
+        <div id="errorMsg" class="error-message">Por favor, ingresa un número de identificación.</div>
+    </div>
+
+    <!-- Zona de Resultados -->
+    <div id="resultado-notas">
+        <div class="report-header">
+            <div>Socializacion de Notas primer Corte - 2026</div>
+            <div>Formulación y Evaluación de Proyectos</div>
+            <div>Ingeniería de Sistemas</div>
+            <div>Julio Ricardo Martínez Montezuma</div>
+        </div>
+
+        <div class="grid-info">
+            <div class="label">Identificación</div>
+            <div class="value-cell" id="lbl-id"></div>
+
+            <div class="label">Nombre</div>
+            <div class="value-cell" id="lbl-nombre"></div>
+
+            <div class="label">Programa:</div>
+            <div class="value-cell" id="lbl-programa"></div>
+        </div>
+
+        <div class="grid-notas">
+            <!-- Encabezados -->
+            <div></div>
+            <div class="nota-cell header-cell">Valor</div>
+            <div class="nota-cell porcentaje-cell header-cell">Porcentaje</div>
+
+            <!-- Faltas -->
+            <div class="label">Faltas</div>
+            <div class="nota-cell" id="lbl-faltas-v"></div>
+            <div class="nota-cell porcentaje-cell" id="lbl-faltas-p"></div>
+
+            <!-- C1S3 -->
+            <div class="label">Taller C1S3</div>
+            <div class="nota-cell" id="lbl-c1s3-v"></div>
+            <div class="nota-cell porcentaje-cell" id="lbl-c1s3-p"></div>
+
+            <!-- C1S5 -->
+            <div class="label">Taller C1S5</div>
+            <div class="nota-cell" id="lbl-c1s5-v"></div>
+            <div class="nota-cell porcentaje-cell" id="lbl-c1s5-p"></div>
+        </div>
+
+        <div class="grid-definitiva">
+            <div class="label">Final 100%</div>
+            <div class="definitiva-value" id="lbl-definitiva"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    /* BASE DE DATOS EXTRACTADA DE LA IMAGEN EXCEL */
+    const baseDatos = [
+        { identificacion: "1058966757", nombre: "ANACONA VELASQUEZ MIGUEL ANGEL", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,1" },
+        { identificacion: "1058932230", nombre: "BARRERA TORRES JUAN DAVID", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "3,2", porcentaje: "1,44" } }, definitiva: "2,3" },
+        { identificacion: "1063807451", nombre: "BARRIOS ORTEGA MARIA JOSE", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" },
+        { identificacion: "1022936723", nombre: "BUITRAGO MOLINA JAKSON ALEJANDRO", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,2" },
+        { identificacion: "1003418409", nombre: "CALAMBAS SOSCUE HEIDY NATALIA", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "4,3", porcentaje: "1,94" } }, definitiva: "2,8" },
+        { identificacion: "1061713226", nombre: "CALDON FERNANDEZ JUAN SEBASTIAN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
+        { identificacion: "1061721516", nombre: "CAMPO MUNOZ EVELYN CAMILA", programa: "IS", notas: { faltas: { valor: "2", porcentaje: "0,3" }, c1s3: { valor: "2,0", porcentaje: "0,90" }, c1s5: { valor: "4,3", porcentaje: "1,94" } }, definitiva: "3,1" },
+        { identificacion: "1061684137", nombre: "DAZA FOCASUDEL DANIEL ENRIQUE", programa: "IS", notas: { faltas: { valor: "2", porcentaje: "0,3" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "1,0", porcentaje: "0,45" } }, definitiva: "1,2" },
+        { identificacion: "1061698151", nombre: "DIAGO SARRIA JOAN SEBASTIAN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,8", porcentaje: "2,16" }, c1s5: { valor: "4,8", porcentaje: "2,16" } }, definitiva: "4,8" },
+        { identificacion: "1002821349", nombre: "DIAZ DUQUE ANDRES FELIPE", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,1" },
+        { identificacion: "1061702970", nombre: "GUERRERO PAZ LAURA CATALINA", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "3,2", porcentaje: "1,44" } }, definitiva: "2,3" },
+        { identificacion: "1002968410", nombre: "GUTIERREZ LASSO JUAN JOSE", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,0" },
+        { identificacion: "1059595893", nombre: "LIZ VALENCIA JULIAN ALBERTO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
+        { identificacion: "1002969467", nombre: "LOPEZ CHAGUENDO SEBASTIAN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "4,3", porcentaje: "1,94" } }, definitiva: "2,9" },
+        { identificacion: "1002966444", nombre: "MANQUILLO TOSE HEITAN SANTIAGO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" },
+        { identificacion: "1061706353", nombre: "MEDINA TOBAR DANIEL ESTIBEN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
+        { identificacion: "1116914295", nombre: "PIRA SANCHEZ KEVIN ANDRES", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,8", porcentaje: "2,16" }, c1s5: { valor: "4,8", porcentaje: "2,16" } }, definitiva: "4,8" },
+        { identificacion: "1005945616", nombre: "RICARDO QUINTERO YEISON STEVEN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
+        { identificacion: "1061696765", nombre: "RIVERA SOLARTE JULIAN ANDRES", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
+        { identificacion: "1059236784", nombre: "RODRIGUEZ ILLERA MANUEL SANTIAGO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
+        { identificacion: "1000613152", nombre: "ROJAS FIGUEROA JAIDER ESTEBAN", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "2,7" },
+        { identificacion: "1002821756", nombre: "SANCHEZ CHAMORRO KEVIN ANDRES", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,0" },
+        { identificacion: "1058547582", nombre: "TRUJILLO ORTEGA ANNY DAIANA", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" },
+        { identificacion: "1061699726", nombre: "VALENCIA NUNEZ CARLOS EDUARDO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" }
+    ];
+
+    // Permite presionar la tecla 'Enter' para buscar
+    function verificarEnter(event) {
+        if (event.key === "Enter") {
+            buscarEstudiante();
+        }
+    }
+
+    // Función principal para buscar y mostrar los datos
+    function buscarEstudiante() {
+        const idBuscado = document.getElementById("inputIdentificacion").value.trim();
+        const divResultado = document.getElementById("resultado-notas");
+        const msgError = document.getElementById("errorMsg");
+
+        if (idBuscado === "") {
+            divResultado.style.display = "none";
+            msgError.style.display = "block";
+            return;
+        }
+
+        // 1. Buscar al estudiante en el arreglo
+        let estudianteEncontrado = baseDatos.find(est => est.identificacion === idBuscado);
+
+        // 2. Si no existe en la base de datos, creamos uno dinámico con la cédula ingresada
+        if (!estudianteEncontrado) {
+            estudianteEncontrado = {
+                identificacion: idBuscado,
+                nombre: "ESTUDIANTE NO REGISTRADO (DATOS DE PRUEBA)",
+                programa: "IS",
+                notas: {
+                    faltas: { valor: "0", porcentaje: "0,0" },
+                    c1s3: { valor: "0,0", porcentaje: "0,00" },
+                    c1s5: { valor: "0,0", porcentaje: "0,00" }
+                },
+                definitiva: "0,0"
+            };
+        }
+
+        // Llenar los campos de información personal
+        document.getElementById("lbl-id").innerText = estudianteEncontrado.identificacion;
+        document.getElementById("lbl-nombre").innerText = estudianteEncontrado.nombre;
+        document.getElementById("lbl-programa").innerText = estudianteEncontrado.programa;
+
+        // Llenar Faltas
+        document.getElementById("lbl-faltas-v").innerText = estudianteEncontrado.notas.faltas.valor;
+        document.getElementById("lbl-faltas-p").innerText = estudianteEncontrado.notas.faltas.porcentaje;
+
+        // Llenar C1S3
+        document.getElementById("lbl-c1s3-v").innerText = estudianteEncontrado.notas.c1s3.valor;
+        document.getElementById("lbl-c1s3-p").innerText = estudianteEncontrado.notas.c1s3.porcentaje;
+
+        // Llenar C1S5
+        document.getElementById("lbl-c1s5-v").innerText = estudianteEncontrado.notas.c1s5.valor;
+        document.getElementById("lbl-c1s5-p").innerText = estudianteEncontrado.notas.c1s5.porcentaje;
+
+        // Llenar Definitiva
+        document.getElementById("lbl-definitiva").innerText = estudianteEncontrado.definitiva;
+
+        // Ocultar error y mostrar resultados
+        msgError.style.display = "none";
+        divResultado.style.display = "block";
+    }
+
+    // Función para limpiar la búsqueda y consultar otro estudiante fácilmente
+    function limpiarBusqueda() {
+        const input = document.getElementById("inputIdentificacion");
+        const divResultado = document.getElementById("resultado-notas");
+        const msgError = document.getElementById("errorMsg");
+
+        input.value = "";
+        divResultado.style.display = "none";
+        msgError.style.display = "none";
+        input.focus(); // Coloca el cursor automáticamente en el buscador de nuevo
+    }
+</script>
+
+</body>
+</html>
