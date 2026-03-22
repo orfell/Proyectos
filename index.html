@@ -3,348 +3,289 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socialización de Notas - Formulación y Evaluación de Proyectos</title>
+    <title>Consulta de Calificaciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            color: #000;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 650px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Buscador */
-        .search-section {
-            background-color: #eef2f5;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .search-section h3 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .search-input {
-            padding: 10px;
-            width: 70%;
-            max-width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 15px;
-        }
-
-        .search-btn {
-            padding: 10px 20px;
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            margin-left: 10px;
-            transition: background-color 0.2s;
-        }
-
-        .search-btn:hover {
-            background-color: #004494;
-        }
-
-        .clear-btn {
-            padding: 10px 20px;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            margin-left: 10px;
-            transition: background-color 0.2s;
-        }
-
-        .clear-btn:hover {
-            background-color: #5a6268;
-        }
-
-        .error-message {
-            color: #d32f2f;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-
-        /* Cabecera del reporte */
-        .report-header {
-            font-weight: bold;
-            font-size: 16px;
-            line-height: 1.4;
-            margin-bottom: 30px;
-        }
-
-        /* Estilos tipo tabla/grid de la imagen */
-        .grid-info {
-            display: grid;
-            grid-template-columns: 130px 1fr;
-            margin-bottom: 25px;
-        }
-
-        .label {
-            font-weight: bold;
-            padding: 6px 0;
-            font-size: 16px;
-        }
-
-        .value-cell {
-            border: 1px solid #000;
-            padding: 6px 8px;
-            margin-top: -1px; /* Para colapsar los bordes como en Excel */
-            font-size: 16px;
-        }
-
-        /* Notas grid */
-        .grid-notas {
-            display: grid;
-            grid-template-columns: 130px 100px 100px;
-            margin-bottom: 25px;
-        }
-
-        .nota-cell {
-            border: 1px solid #000;
-            padding: 6px 8px;
-            text-align: center;
-            margin-top: -1px;
-            margin-left: -1px;
-            font-size: 16px;
-        }
-
-        .header-cell {
-            font-weight: bold;
-        }
-
-        .porcentaje-cell {
-            background-color: #e0e0e0; /* Fondo gris para los porcentajes */
-        }
-
-        /* Nota Definitiva */
-        .grid-definitiva {
-            display: grid;
-            grid-template-columns: 130px 200px;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .definitiva-value {
-            border: 2px solid #2e7d32; /* Borde verde característico */
-            padding: 6px 8px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            background-color: #e8f5e9;
-        }
-
-        #resultado-notas {
-            display: none; /* Oculto por defecto hasta que se busque */
-        }
-
-        /* Responsivo para móviles */
-        @media (max-width: 500px) {
-            body { padding: 10px; }
-            .container { padding: 15px; }
-            .search-input { width: 100%; margin-bottom: 10px; }
-            .search-btn, .clear-btn { margin-left: 0; width: 100%; margin-bottom: 10px;}
-            .grid-info { grid-template-columns: 90px 1fr; }
-            .grid-notas { grid-template-columns: 85px minmax(50px, 1fr) minmax(85px, 1fr); }
-            .grid-definitiva { grid-template-columns: 90px 1fr; }
-            .label, .value-cell, .nota-cell, .definitiva-value { font-size: 13px; padding: 6px 4px; }
-            .report-header { font-size: 14px; margin-bottom: 20px; }
+        /* Animación suave para cuando aparecen los resultados */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body>
+<body class="bg-[#e9ecef] font-sans text-gray-800 min-h-screen py-8 px-4 flex items-start justify-center">
 
-<div class="container">
-    
-    <!-- Zona de Búsqueda -->
-    <div class="search-section">
-        <h3>Consulta de Notas - Estudiantes</h3>
-        <input type="number" id="inputIdentificacion" class="search-input" placeholder="Ingresa la cédula" onkeypress="verificarEnter(event)">
-        <button class="search-btn" onclick="buscarEstudiante()">Consultar</button>
-        <button class="clear-btn" onclick="limpiarBusqueda()">Limpiar</button>
-        <div id="errorMsg" class="error-message">Por favor, ingresa un número de identificación.</div>
+    <div class="w-full max-w-2xl bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden">
+        
+        <!-- ========================================== -->
+        <!-- ENCABEZADOS FIJOS                          -->
+        <!-- ========================================== -->
+        <div class="pt-8 pb-4 px-6 sm:px-10">
+            <h1 class="text-center text-[#00479A] text-lg sm:text-xl font-bold mb-1">Socialización de Notas primer Corte - 2026</h1>
+            <h2 class="text-center text-gray-800 text-base sm:text-lg font-bold">Formulación y Evaluación de Proyectos</h2>
+            <p class="text-center text-gray-500 text-xs sm:text-sm mt-1">Ingeniería de Sistemas</p>
+            <p class="text-center text-gray-500 text-xs sm:text-sm">Julio Ricardo Martinez Montezuma</p>
+            <hr class="mt-6 border-gray-200">
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BUSCADOR                                   -->
+        <!-- ========================================== -->
+        <div class="px-6 sm:px-10 pb-6">
+            <div class="bg-[#f8f9fa] border border-gray-200 rounded-lg p-5 sm:p-6 shadow-sm">
+                <h3 class="text-center font-bold text-gray-800 mb-4 text-sm">Consulta de Notas</h3>
+                
+                <form id="search-form" class="flex flex-col sm:flex-row gap-3 justify-center items-center" onsubmit="event.preventDefault(); searchStudent();">
+                    <input type="number" id="cedula-input" class="border border-gray-300 rounded px-4 py-2 w-full sm:w-64 text-sm focus:outline-none focus:ring-2 focus:ring-[#00479A] focus:border-transparent transition-all" placeholder="Ej: 1002821013" required>
+                    <button type="submit" class="bg-[#0056b3] hover:bg-[#00479A] text-white font-bold py-2 px-6 rounded text-sm transition-colors w-full sm:w-auto shadow">Consultar</button>
+                    <button type="button" onclick="clearSearch()" class="bg-[#6c757d] hover:bg-[#5a6268] text-white font-bold py-2 px-6 rounded text-sm transition-colors w-full sm:w-auto shadow">Limpiar</button>
+                </form>
+                <p id="error-msg" class="text-red-500 text-xs mt-3 text-center hidden font-medium">Cédula no encontrada. Verifica el número.</p>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RESULTADOS (Oculto por defecto)            -->
+        <!-- ========================================== -->
+        <div id="result-section" class="px-6 sm:px-10 pb-8 hidden fade-in">
+            
+            <!-- Tarjeta de Información del Estudiante -->
+            <div class="border border-gray-200 rounded-lg p-5 sm:p-6 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center border-b border-dashed border-gray-300 py-2">
+                    <span class="font-bold text-xs sm:text-sm w-48 text-gray-800">Identificación:</span>
+                    <span id="res-cedula" class="text-xs sm:text-sm text-gray-700">---</span>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center border-b border-dashed border-gray-300 py-2">
+                    <span class="font-bold text-xs sm:text-sm w-48 text-gray-800">Nombre:</span>
+                    <span id="res-nombre" class="text-xs sm:text-sm text-gray-700 uppercase">---</span>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center border-b border-dashed border-gray-300 py-2">
+                    <span class="font-bold text-xs sm:text-sm w-48 text-gray-800">Correo Institucional:</span>
+                    <span id="res-correo" class="text-xs sm:text-sm text-[#00479A]">---</span>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center py-2">
+                    <span class="font-bold text-xs sm:text-sm w-48 text-gray-800">Programa:</span>
+                    <span id="res-programa" class="text-xs sm:text-sm text-gray-700">---</span>
+                </div>
+            </div>
+
+            <!-- Tabla de Calificaciones -->
+            <div class="border border-[#00479A] rounded-t-lg overflow-x-auto mb-4 shadow-sm w-full">
+                <table class="w-full text-sm text-left whitespace-nowrap min-w-[400px]">
+                    <thead class="bg-[#00479A] text-white">
+                        <tr>
+                            <th class="px-4 py-3 font-bold text-center border-r border-[#003d82]">Concepto</th>
+                            <th class="px-4 py-3 font-bold text-center border-r border-[#003d82] w-24 sm:w-32">Nota</th>
+                            <th class="px-4 py-3 font-bold text-center w-24 sm:w-32">Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <!-- Fila FALTAS -->
+                        <tr>
+                            <td class="px-4 py-3 font-bold text-gray-800 text-xs sm:text-sm border-r border-gray-200">FALTAS (10%)</td>
+                            <td id="res-faltas" class="px-4 py-3 text-center border-r border-gray-200 text-gray-800 text-xs sm:text-sm">---</td>
+                            <td id="res-nota10" class="px-4 py-3 text-center bg-[#f8f9fa] text-gray-800 text-xs sm:text-sm">---</td>
+                        </tr>
+                        <!-- Fila C1S3 -->
+                        <tr>
+                            <td class="px-4 py-3 font-bold text-gray-800 text-xs sm:text-sm border-r border-gray-200">C1S3 (45%)</td>
+                            <td id="res-c1s3" class="px-4 py-3 text-center border-r border-gray-200 text-xs sm:text-sm">---</td>
+                            <td id="res-porc1" class="px-4 py-3 text-center bg-[#f8f9fa] text-xs sm:text-sm">---</td>
+                        </tr>
+                        <!-- Fila C1S5 -->
+                        <tr>
+                            <td class="px-4 py-3 font-bold text-gray-800 text-xs sm:text-sm border-r border-gray-200">C1S5 (45%)</td>
+                            <td id="res-c1s5" class="px-4 py-3 text-center border-r border-gray-200 text-xs sm:text-sm">---</td>
+                            <td id="res-porc2" class="px-4 py-3 text-center bg-[#f8f9fa] text-xs sm:text-sm">---</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Banner Final -->
+            <div id="final-banner-container" class="flex border border-gray-300 shadow-sm overflow-hidden">
+                <div id="final-label-container" class="flex-grow bg-gray-100 text-gray-800 font-bold text-right py-3 sm:py-4 px-4 sm:px-6 text-sm flex items-center justify-end">
+                    Nota Final Corte (100%):
+                </div>
+                <div id="res-final" class="bg-gray-800 text-white font-bold text-xl sm:text-2xl py-3 sm:py-4 px-6 sm:px-10 text-center w-32 sm:w-40 flex items-center justify-center">
+                    ---
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Zona de Resultados -->
-    <div id="resultado-notas">
-        <div class="report-header">
-            <div>Socializacion de Notas primer Corte - 2026</div>
-            <div>Formulación y Evaluación de Proyectos</div>
-            <div>Ingeniería de Sistemas</div>
-            <div>Julio Ricardo Martínez Montezuma</div>
-        </div>
+    <!-- ========================================== -->
+    <!-- BASE DE DATOS Y LÓGICA JAVASCRIPT          -->
+    <!-- ========================================== -->
+    <script>
+        // Base de datos - Ingeniería de Sistemas (IS) - 45%
+        const studentsDb = [
+            { nombre: "ANACONA VELASQUEZ MIGUEL ANGEL", cedula: "1058966757", programa: "IS", correo: "miguelanacona@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,0", porc1: "1,80", c1s5: "4,0", porc2: "1,80", final: "4,1" },
+            { nombre: "BARRERA TORRES JUAN DAVID", cedula: "1058932230", programa: "IS", correo: "davidbarrera@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "1,0", porc1: "0,45", c1s5: "3,2", porc2: "1,44", final: "2,3" },
+            { nombre: "BARRIOS ORTEGA MARIA JOSE", cedula: "1063807451", programa: "IS", correo: "mariabarrios@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,5", porc1: "2,03", c1s5: "4,5", porc2: "2,03", final: "4,6" },
+            { nombre: "BUITRAGO MOLINA JAKSON ALEJANDRO", cedula: "1022936723", programa: "IS", correo: "jaksonbuitrago@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,2" },
+            { nombre: "CALAMBAS SOSCUE HEIDY NATALIA", cedula: "1003418409", programa: "IS", correo: "heidycalambas@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "2,0", porc1: "0,90", c1s5: "4,3", porc2: "1,94", final: "3,2" },
+            { nombre: "CALDON FERNANDEZ JUAN SEBASTIAN", cedula: "1061713226", programa: "IS", correo: "juancaldon@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,3" },
+            { nombre: "CAMPO MUNOZ EVELYN CAMILA", cedula: "1061721516", programa: "IS", correo: "evelyncampo@unicomfacauca.edu.co", faltas: "2", nota10: "0,3", c1s3: "2,0", porc1: "0,90", c1s5: "4,3", porc2: "1,94", final: "3,1" },
+            { nombre: "DAZA FOCASUDEL DANIEL ENRIQUE", cedula: "1061684137", programa: "IS", correo: "danieldaza@unicomfacauca.edu.co", faltas: "2", nota10: "0,3", c1s3: "1,0", porc1: "0,45", c1s5: "1,0", porc2: "0,45", final: "1,2" },
+            { nombre: "DIAGO SARRIA JOAN SEBASTIAN", cedula: "1061698151", programa: "IS", correo: "joandiago@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,8", porc1: "2,16", c1s5: "4,8", porc2: "2,16", final: "4,8" },
+            { nombre: "DIAZ DUQUE ANDRES FELIPE", cedula: "1002821349", programa: "IS", correo: "andresfelipediaz@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,0", porc1: "1,80", c1s5: "4,0", porc2: "1,80", final: "4,1" },
+            { nombre: "GUERRERO PAZ LAURA CATALINA", cedula: "1061702970", programa: "IS", correo: "lauraguerrero@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "1,0", porc1: "0,45", c1s5: "3,2", porc2: "1,44", final: "2,3" },
+            { nombre: "GUTIERREZ LASSO JUAN JOSE", cedula: "1002968410", programa: "IS", correo: "josegutierrez@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "4,0", porc1: "1,80", c1s5: "4,0", porc2: "1,80", final: "4,0" },
+            { nombre: "LIZ VALENCIA JULIAN ALBERTO", cedula: "1059595893", programa: "IS", correo: "julianliz@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,3" },
+            { nombre: "LOPEZ CHAGUENDO SEBASTIAN", cedula: "1002969467", programa: "IS", correo: "sebastianchaguendo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "2,0", porc1: "0,90", c1s5: "4,3", porc2: "1,94", final: "3,3" },
+            { nombre: "MANQUILLO TOSE HEITAN SANTIAGO", cedula: "1002966444", programa: "IS", correo: "heitanmanquillo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,5", porc1: "2,03", c1s5: "4,5", porc2: "2,03", final: "4,6" },
+            { nombre: "MEDINA TOBAR DANIEL ESTIBEN", cedula: "1061706353", programa: "IS", correo: "danieltobar@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,3" },
+            { nombre: "PIRA SANCHEZ KEVIN ANDRES", cedula: "1116914295", programa: "IS", correo: "kevinpira@unicornfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,8", porc1: "2,16", c1s5: "4,8", porc2: "2,16", final: "4,8" },
+            { nombre: "RICARDO QUINTERO YEISON STEVEN", cedula: "1005945616", programa: "IS", correo: "yeisonricardo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,3" },
+            { nombre: "RIVERA SOLARTE JULIAN ANDRES", cedula: "1061696765", programa: "IS", correo: "juliansolarte@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,3" },
+            { nombre: "RODRIGUEZ ILLERA MANUEL SANTIAGO", cedula: "1059236784", programa: "IS", correo: "manuelrodriguez@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,2", porc1: "1,89", c1s5: "4,2", porc2: "1,89", final: "4,3" },
+            { nombre: "ROJAS FIGUEROA JAIDER ESTEBAN", cedula: "1000613152", programa: "IS", correo: "jaiderrojas@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "1,0", porc1: "0,45", c1s5: "4,0", porc2: "1,80", final: "2,7" },
+            { nombre: "SANCHEZ CHAMORRO KEVIN ANDRES", cedula: "1002821756", programa: "IS", correo: "kevinsanchez@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "4,0", porc1: "1,80", c1s5: "4,0", porc2: "1,80", final: "4,0" },
+            { nombre: "TRUJILLO ORTEGA ANNY DAIANA", cedula: "1058547582", programa: "IS", correo: "annytrujillo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,5", porc1: "2,03", c1s5: "4,5", porc2: "2,03", final: "4,6" },
+            { nombre: "VALENCIA NUNEZ CARLOS EDUARDO", cedula: "1061699726", programa: "IS", correo: "eduardovalencia@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "4,5", porc1: "2,03", c1s5: "4,5", porc2: "2,03", final: "4,6" },
+            { nombre: "ALONSO ORTEGA EDWIN FERNANDO", cedula: "1002860532", programa: "IS", correo: "edwinalonso@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "-", porc1: "0,00", c1s5: "-", porc2: "0,00", final: "0,5" },
+            { nombre: "CARDENAS CAEZ HOLMAN ARLEY", cedula: "1087959622", programa: "IS", correo: "holmancardenas@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "4,2", porc2: "1,89", final: "2,8" },
+            { nombre: "CARDENAS CAEZ UBEIMAR SAMIR", cedula: "1087960899", programa: "IS", correo: "ubeimarcardenas@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "4,2", porc2: "1,89", final: "2,8" },
+            { nombre: "CHANTRE POLANCO LUIS ALEJANDRO", cedula: "1002855595", programa: "IS", correo: "luischantre@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "-", porc1: "0,00", c1s5: "-", porc2: "0,00", final: "0,4" },
+            { nombre: "FLOR MOSQUERA JUAN MANUEL", cedula: "1061694812", programa: "IS", correo: "Juanmanuelfior@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "3,5", porc1: "1,58", c1s5: "1,0", porc2: "0,45", final: "2,4" },
+            { nombre: "GALINDEZ PERAFAN MARIA DEL CARMEN", cedula: "1058976017", programa: "IS", correo: "mariagalindez@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "4,2", porc1: "1,89", c1s5: "4,4", porc2: "1,98", final: "4,3" },
+            { nombre: "GARCIA LOPEZ JOSE", cedula: "1061708101", programa: "IS", correo: "josegarcia@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "5,0", porc1: "2,25", c1s5: "5,0", porc2: "2,25", final: "5,0" },
+            { nombre: "GAVIRIA RAMIREZ DIEGO JOSE", cedula: "1061821094", programa: "IS", correo: "diegogaviria@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "2,5", porc2: "1,13", final: "2,1" },
+            { nombre: "GIL TAIMAL ALEX SANTIAGO", cedula: "1002876814", programa: "IS", correo: "alexgil@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "4,2", porc1: "1,89", c1s5: "4,4", porc2: "1,98", final: "4,3" },
+            { nombre: "MANQUILLO SANCHEZ JHON ALDEMAR", cedula: "1002969024", programa: "IS", correo: "jhonmanquillo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "4,0", porc2: "1,80", final: "2,8" },
+            { nombre: "MEDINA CEBALLOS JULIAN DAVID", cedula: "1002821013", programa: "IS", correo: "julianmedina@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "-", porc1: "0,00", c1s5: "-", porc2: "0,00", final: "0,4" },
+            { nombre: "MUNOZ ASTUDILLO JOSE FERNANDO", cedula: "1002777868", programa: "IS", correo: "joseastudillo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "2,5", porc2: "1,13", final: "2,1" },
+            { nombre: "MUNOZ CALVACHE NIKOLE YAJAIRA", cedula: "1058548207", programa: "IS", correo: "nikolemunoz@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "1,0", porc1: "0,45", c1s5: "3,8", porc2: "1,71", final: "2,6" },
+            { nombre: "MUNOZ DELGADO DAVID ALEJANDRO", cedula: "1058546109", programa: "IS", correo: "davidalejandromunoz@unicomfacauca.edu.co", faltas: "2", nota10: "0,3", c1s3: "-", porc1: "0,00", c1s5: "-", porc2: "0,00", final: "0,3" },
+            { nombre: "PALECHOR UNI VERONICA", cedula: "1002962697", programa: "IS", correo: "veronicapalechor@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "5,0", porc1: "2,25", c1s5: "5,0", porc2: "2,25", final: "5,0" },
+            { nombre: "PENCUE TALAGA JESUS YEISON", cedula: "1062318635", programa: "IS", correo: "jesuspencue@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "2,5", porc2: "1,13", final: "2,1" },
+            { nombre: "PERENGUEZ PAZ EDARSON SEBASTIAN", cedula: "1061819448", programa: "IS", correo: "edarsonperenguez@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "1,0", porc1: "0,45", c1s5: "2,5", porc2: "1,13", final: "2,0" },
+            { nombre: "RUIZ RIVERA BRAYAN ESTIBEN", cedula: "1002969372", programa: "IS", correo: "brayanruiz@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "4,0", porc2: "1,80", final: "2,8" },
+            { nombre: "SOTELO RUIZ LUISA FERNANDA", cedula: "1002967237", programa: "IS", correo: "luisasotelo@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "4,0", porc2: "1,80", final: "2,8" },
+            { nombre: "TOBAR PAREDES JORGE ARMANDO", cedula: "1061706581", programa: "IS", correo: "jorgetobar@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "1,0", porc1: "0,45", c1s5: "2,5", porc2: "1,13", final: "2,1" },
+            { nombre: "TORRES GOMEZ YUBELY LUCELY", cedula: "1059355070", programa: "IS", correo: "yubelytorres@unicomfacauca.edu.co", faltas: "0", nota10: "0,5", c1s3: "5,0", porc1: "2,25", c1s5: "5,0", porc2: "2,25", final: "5,0" },
+            { nombre: "YANGANA SALAZAR LAURA ISABEL", cedula: "1002968021", programa: "IS", correo: "laurayangana@unicomfacauca.edu.co", faltas: "1", nota10: "0,4", c1s3: "1,0", porc1: "0,45", c1s5: "4,0", porc2: "1,80", final: "2,7" }
+        ];
 
-        <div class="grid-info">
-            <div class="label">Identificación</div>
-            <div class="value-cell" id="lbl-id"></div>
+        function searchStudent() {
+            try {
+                const inputCedula = document.getElementById('cedula-input').value.trim();
+                const errorMsg = document.getElementById('error-msg');
+                const resultSection = document.getElementById('result-section');
+                
+                // Buscar estudiante
+                const student = studentsDb.find(s => s.cedula === inputCedula);
 
-            <div class="label">Nombre</div>
-            <div class="value-cell" id="lbl-nombre"></div>
+                if (student) {
+                    errorMsg.classList.add('hidden');
+                    
+                    // Info Cabecera
+                    document.getElementById('res-cedula').textContent = student.cedula;
+                    document.getElementById('res-nombre').textContent = student.nombre;
+                    document.getElementById('res-correo').textContent = student.correo;
+                    document.getElementById('res-programa').textContent = student.programa;
 
-            <div class="label">Programa:</div>
-            <div class="value-cell" id="lbl-programa"></div>
-        </div>
+                    // Fila FALTAS (Sin colores por indicación, tal cual la DB)
+                    document.getElementById('res-faltas').textContent = student.faltas;
+                    document.getElementById('res-nota10').textContent = student.nota10;
+                    document.getElementById('res-nota10').className = "px-4 py-3 text-center bg-[#f8f9fa] font-bold text-gray-900 text-xs sm:text-sm";
 
-        <div class="grid-notas">
-            <!-- Encabezados -->
-            <div></div>
-            <div class="nota-cell header-cell">Valor</div>
-            <div class="nota-cell porcentaje-cell header-cell">Porcentaje</div>
+                    // Fila C1S3 (Aplicando Lógica de Colores a la nota, Porcentaje en negro y negrita)
+                    applyGradeStyling('res-c1s3', student.c1s3);
+                    document.getElementById('res-porc1').textContent = student.porc1;
+                    document.getElementById('res-porc1').className = "px-4 py-3 text-center bg-[#f8f9fa] font-bold text-gray-900 text-xs sm:text-sm";
 
-            <!-- Faltas -->
-            <div class="label">Faltas</div>
-            <div class="nota-cell" id="lbl-faltas-v"></div>
-            <div class="nota-cell porcentaje-cell" id="lbl-faltas-p"></div>
+                    // Fila C1S5 (Aplicando Lógica de Colores a la nota, Porcentaje en negro y negrita)
+                    applyGradeStyling('res-c1s5', student.c1s5);
+                    document.getElementById('res-porc2').textContent = student.porc2;
+                    document.getElementById('res-porc2').className = "px-4 py-3 text-center bg-[#f8f9fa] font-bold text-gray-900 text-xs sm:text-sm";
 
-            <!-- C1S3 -->
-            <div class="label">Taller C1S3</div>
-            <div class="nota-cell" id="lbl-c1s3-v"></div>
-            <div class="nota-cell porcentaje-cell" id="lbl-c1s3-p"></div>
+                    // Final Total (Lógica de colores dinámica)
+                    const finalElem = document.getElementById('res-final');
+                    const bannerContainer = document.getElementById('final-banner-container');
+                    const labelContainer = document.getElementById('final-label-container');
+                    
+                    finalElem.textContent = student.final;
+                    const finalNum = parseFloat(student.final.replace(',', '.'));
 
-            <!-- C1S5 -->
-            <div class="label">Taller C1S5</div>
-            <div class="nota-cell" id="lbl-c1s5-v"></div>
-            <div class="nota-cell porcentaje-cell" id="lbl-c1s5-p"></div>
-        </div>
+                    // Limpiar clases previas
+                    finalElem.classList.remove('bg-[#207635]', 'bg-gray-800', 'bg-red-600');
+                    bannerContainer.classList.remove('border-[#207635]', 'border-gray-800', 'border-red-600', 'border-gray-300');
+                    labelContainer.classList.remove('bg-[#e6f4ea]', 'bg-gray-100', 'bg-red-50');
 
-        <div class="grid-definitiva">
-            <div class="label">Final 100%</div>
-            <div class="definitiva-value" id="lbl-definitiva"></div>
-        </div>
-    </div>
+                    if (finalNum >= 4.5) {
+                        finalElem.classList.add('bg-[#207635]');
+                        bannerContainer.classList.add('border-[#207635]');
+                        labelContainer.classList.add('bg-[#e6f4ea]');
+                    } else if (finalNum < 3.0) {
+                        finalElem.classList.add('bg-red-600');
+                        bannerContainer.classList.add('border-red-600');
+                        labelContainer.classList.add('bg-red-50');
+                    } else {
+                        finalElem.classList.add('bg-gray-800');
+                        bannerContainer.classList.add('border-gray-800');
+                        labelContainer.classList.add('bg-gray-100');
+                    }
 
-</div>
+                    // Mostrar los resultados suavemente
+                    resultSection.classList.remove('hidden');
+                    
+                    // Reiniciar animación re-agregando la clase
+                    resultSection.classList.remove('fade-in');
+                    void resultSection.offsetWidth; // trigger DOM reflow
+                    resultSection.classList.add('fade-in');
 
-<script>
-    /* BASE DE DATOS EXTRACTADA DE LA IMAGEN EXCEL */
-    const baseDatos = [
-        { identificacion: "1058966757", nombre: "ANACONA VELASQUEZ MIGUEL ANGEL", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,1" },
-        { identificacion: "1058932230", nombre: "BARRERA TORRES JUAN DAVID", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "3,2", porcentaje: "1,44" } }, definitiva: "2,3" },
-        { identificacion: "1063807451", nombre: "BARRIOS ORTEGA MARIA JOSE", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" },
-        { identificacion: "1022936723", nombre: "BUITRAGO MOLINA JAKSON ALEJANDRO", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,2" },
-        { identificacion: "1003418409", nombre: "CALAMBAS SOSCUE HEIDY NATALIA", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "4,3", porcentaje: "1,94" } }, definitiva: "2,8" },
-        { identificacion: "1061713226", nombre: "CALDON FERNANDEZ JUAN SEBASTIAN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
-        { identificacion: "1061721516", nombre: "CAMPO MUNOZ EVELYN CAMILA", programa: "IS", notas: { faltas: { valor: "2", porcentaje: "0,3" }, c1s3: { valor: "2,0", porcentaje: "0,90" }, c1s5: { valor: "4,3", porcentaje: "1,94" } }, definitiva: "3,1" },
-        { identificacion: "1061684137", nombre: "DAZA FOCASUDEL DANIEL ENRIQUE", programa: "IS", notas: { faltas: { valor: "2", porcentaje: "0,3" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "1,0", porcentaje: "0,45" } }, definitiva: "1,2" },
-        { identificacion: "1061698151", nombre: "DIAGO SARRIA JOAN SEBASTIAN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,8", porcentaje: "2,16" }, c1s5: { valor: "4,8", porcentaje: "2,16" } }, definitiva: "4,8" },
-        { identificacion: "1002821349", nombre: "DIAZ DUQUE ANDRES FELIPE", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,1" },
-        { identificacion: "1061702970", nombre: "GUERRERO PAZ LAURA CATALINA", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "3,2", porcentaje: "1,44" } }, definitiva: "2,3" },
-        { identificacion: "1002968410", nombre: "GUTIERREZ LASSO JUAN JOSE", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,0" },
-        { identificacion: "1059595893", nombre: "LIZ VALENCIA JULIAN ALBERTO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
-        { identificacion: "1002969467", nombre: "LOPEZ CHAGUENDO SEBASTIAN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "4,3", porcentaje: "1,94" } }, definitiva: "2,9" },
-        { identificacion: "1002966444", nombre: "MANQUILLO TOSE HEITAN SANTIAGO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" },
-        { identificacion: "1061706353", nombre: "MEDINA TOBAR DANIEL ESTIBEN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
-        { identificacion: "1116914295", nombre: "PIRA SANCHEZ KEVIN ANDRES", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,8", porcentaje: "2,16" }, c1s5: { valor: "4,8", porcentaje: "2,16" } }, definitiva: "4,8" },
-        { identificacion: "1005945616", nombre: "RICARDO QUINTERO YEISON STEVEN", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
-        { identificacion: "1061696765", nombre: "RIVERA SOLARTE JULIAN ANDRES", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
-        { identificacion: "1059236784", nombre: "RODRIGUEZ ILLERA MANUEL SANTIAGO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,2", porcentaje: "1,89" }, c1s5: { valor: "4,2", porcentaje: "1,89" } }, definitiva: "4,3" },
-        { identificacion: "1000613152", nombre: "ROJAS FIGUEROA JAIDER ESTEBAN", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "1,0", porcentaje: "0,45" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "2,7" },
-        { identificacion: "1002821756", nombre: "SANCHEZ CHAMORRO KEVIN ANDRES", programa: "IS", notas: { faltas: { valor: "1", porcentaje: "0,4" }, c1s3: { valor: "4,0", porcentaje: "1,80" }, c1s5: { valor: "4,0", porcentaje: "1,80" } }, definitiva: "4,0" },
-        { identificacion: "1058547582", nombre: "TRUJILLO ORTEGA ANNY DAIANA", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" },
-        { identificacion: "1061699726", nombre: "VALENCIA NUNEZ CARLOS EDUARDO", programa: "IS", notas: { faltas: { valor: "0", porcentaje: "0,5" }, c1s3: { valor: "4,5", porcentaje: "2,03" }, c1s5: { valor: "4,5", porcentaje: "2,03" } }, definitiva: "4,6" }
-    ];
-
-    // Permite presionar la tecla 'Enter' para buscar
-    function verificarEnter(event) {
-        if (event.key === "Enter") {
-            buscarEstudiante();
+                } else {
+                    resultSection.classList.add('hidden');
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Error procesando la solicitud:", error);
+            }
         }
-    }
 
-    // Función principal para buscar y mostrar los datos
-    function buscarEstudiante() {
-        const idBuscado = document.getElementById("inputIdentificacion").value.trim();
-        const divResultado = document.getElementById("resultado-notas");
-        const msgError = document.getElementById("errorMsg");
-
-        if (idBuscado === "") {
-            divResultado.style.display = "none";
-            msgError.style.display = "block";
-            return;
+        function clearSearch() {
+            try {
+                document.getElementById('cedula-input').value = '';
+                document.getElementById('error-msg').classList.add('hidden');
+                document.getElementById('result-section').classList.add('hidden');
+                document.getElementById('cedula-input').focus();
+            } catch (error) {
+                console.error("Error limpiando formulario:", error);
+            }
         }
 
-        // 1. Buscar al estudiante en el arreglo
-        let estudianteEncontrado = baseDatos.find(est => est.identificacion === idBuscado);
+        // Helper: Evalúa y pinta el color correspondiente (>= 4.5 Verde, < 3.0 Rojo, Resto Negro)
+        function applyGradeStyling(elementId, notaStr) {
+            const elem = document.getElementById(elementId);
+            
+            // Reemplazar pendiente visualmente si es "-"
+            if (notaStr === '-' || notaStr.trim() === '') {
+                elem.textContent = 'Pendiente';
+                elem.className = "px-4 py-3 text-center border-r border-gray-200 text-red-600 font-bold italic text-xs sm:text-sm";
+                return;
+            }
 
-        // 2. Si no existe en la base de datos, creamos uno dinámico con la cédula ingresada
-        if (!estudianteEncontrado) {
-            estudianteEncontrado = {
-                identificacion: idBuscado,
-                nombre: "ESTUDIANTE NO REGISTRADO (DATOS DE PRUEBA)",
-                programa: "IS",
-                notas: {
-                    faltas: { valor: "0", porcentaje: "0,0" },
-                    c1s3: { valor: "0,0", porcentaje: "0,00" },
-                    c1s5: { valor: "0,0", porcentaje: "0,00" }
-                },
-                definitiva: "0,0"
-            };
+            // Convertir la coma a punto para procesar numéricamente
+            const num = parseFloat(notaStr.replace(',', '.'));
+            elem.textContent = notaStr; // Mantiene su coma natural
+            
+            let colorClass = "";
+            if (num >= 4.5) {
+                colorClass = "text-[#207635]"; // Verde
+            } else if (num < 3.0) {
+                colorClass = "text-red-600"; // Rojo
+            } else {
+                colorClass = "text-gray-900"; // Negro
+            }
+
+            // Aplicar las clases bases combinadas con el color (solo para la celda de la nota)
+            const baseClasses = "px-4 py-3 text-center border-r border-gray-200 font-bold text-xs sm:text-sm ";
+                
+            elem.className = baseClasses + colorClass;
         }
-
-        // Llenar los campos de información personal
-        document.getElementById("lbl-id").innerText = estudianteEncontrado.identificacion;
-        document.getElementById("lbl-nombre").innerText = estudianteEncontrado.nombre;
-        document.getElementById("lbl-programa").innerText = estudianteEncontrado.programa;
-
-        // Llenar Faltas
-        document.getElementById("lbl-faltas-v").innerText = estudianteEncontrado.notas.faltas.valor;
-        document.getElementById("lbl-faltas-p").innerText = estudianteEncontrado.notas.faltas.porcentaje;
-
-        // Llenar C1S3
-        document.getElementById("lbl-c1s3-v").innerText = estudianteEncontrado.notas.c1s3.valor;
-        document.getElementById("lbl-c1s3-p").innerText = estudianteEncontrado.notas.c1s3.porcentaje;
-
-        // Llenar C1S5
-        document.getElementById("lbl-c1s5-v").innerText = estudianteEncontrado.notas.c1s5.valor;
-        document.getElementById("lbl-c1s5-p").innerText = estudianteEncontrado.notas.c1s5.porcentaje;
-
-        // Llenar Definitiva
-        document.getElementById("lbl-definitiva").innerText = estudianteEncontrado.definitiva;
-
-        // Ocultar error y mostrar resultados
-        msgError.style.display = "none";
-        divResultado.style.display = "block";
-    }
-
-    // Función para limpiar la búsqueda y consultar otro estudiante fácilmente
-    function limpiarBusqueda() {
-        const input = document.getElementById("inputIdentificacion");
-        const divResultado = document.getElementById("resultado-notas");
-        const msgError = document.getElementById("errorMsg");
-
-        input.value = "";
-        divResultado.style.display = "none";
-        msgError.style.display = "none";
-        input.focus(); // Coloca el cursor automáticamente en el buscador de nuevo
-    }
-</script>
-
+    </script>
 </body>
 </html>
