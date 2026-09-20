@@ -1,433 +1,144 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socialización de Notas - Herramientas Informáticas</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            color: #000;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 650px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Cabecera del reporte (Ahora siempre visible al inicio) */
-        .report-header {
-            font-weight: bold;
-            font-size: 16px;
-            line-height: 1.4;
-            margin-bottom: 30px;
-            text-align: center;
-            border-bottom: 2px solid #eef2f5;
-            padding-bottom: 15px;
-        }
-
-        /* Estilos para el logo */
-        .logo-img {
-            max-width: 250px;
-            height: auto;
-            margin-bottom: 15px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Separador del logo */
-        .logo-separator {
-            border: none;
-            border-top: 1px solid #d1d5db; /* Línea gris delgada */
-            margin: 0 auto 20px auto; /* Centrada con espacio inferior */
-            width: 85%; /* Ocupa el 85% del ancho para un mejor diseño */
-        }
-
-        /* Buscador */
-        .search-section {
-            background-color: #eef2f5;
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .search-section h3 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .search-input {
-            padding: 10px;
-            width: 70%;
-            max-width: 300px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 15px;
-        }
-
-        .search-btn, .clear-btn {
-            padding: 10px 20px;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
-            margin-left: 10px;
-            transition: background-color 0.2s;
-        }
-
-        .search-btn { background-color: #0056b3; }
-        .search-btn:hover { background-color: #004494; }
-        
-        .clear-btn { background-color: #6c757d; }
-        .clear-btn:hover { background-color: #5a6268; }
-
-        .error-message {
-            color: #d32f2f;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-
-        /* CONFIGURACIÓN FLUIDA Y RESPONSIVA */
-        .grid-info {
-            display: grid;
-            grid-template-columns: 130px 1fr;
-            margin: 0 auto 25px auto;
-            width: 100%;
-        }
-
-        .grid-notas {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
-            margin: 0 auto 25px auto;
-            width: 100%;
-        }
-
-        .grid-definitiva {
-            display: grid;
-            grid-template-columns: 1fr 100px;
-            align-items: center;
-            margin: 20px auto 0 auto;
-            width: 100%;
-        }
-
-        .label {
-            font-weight: bold;
-            padding: 6px 0;
-            font-size: 16px;
-            text-align: left;
-        }
-
-        .value-cell {
-            border: 1px solid #000;
-            padding: 6px 8px;
-            margin-top: -1px;
-            font-size: 16px;
-            word-break: break-word; /* Evita desbordes de nombres largos */
-        }
-
-        .nota-cell {
-            border: 1px solid #000;
-            padding: 6px 8px;
-            margin-top: -1px;
-            margin-left: -1px;
-            font-size: 16px;
-            word-break: break-word;
-        }
-
-        .text-center { text-align: center; }
-        .text-left { text-align: left; font-weight: bold; }
-        
-        .text-perdido {
-            color: #d32f2f;
-            font-weight: bold;
-        }
-
-        .text-excelente {
-            color: #2e7d32;
-            font-weight: bold;
-        }
-
-        .header-bg {
-            background-color: #888888;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .porcentaje-cell {
-            background-color: #e0e0e0;
-        }
-
-        .definitiva-value {
-            border: 1px solid #000;
-            padding: 6px 8px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        #resultado-notas {
-            display: none;
-        }
-
-        /* MEDIA QUERIES PARA DISPOSITIVOS MÓVILES */
-        @media (max-width: 500px) {
-            body { padding: 10px; }
-            .container { padding: 15px; }
-            
-            /* Ajuste de columnas para pantallas pequeñas */
-            .grid-info { grid-template-columns: 100px 1fr; }
-            .grid-notas { grid-template-columns: 1.2fr 1fr 1fr 1.2fr; }
-            .grid-definitiva { grid-template-columns: 1fr 80px; }
-            
-            /* Reducción de fuentes y márgenes internos */
-            .label { font-size: 13px; }
-            .value-cell, .nota-cell, .definitiva-value { font-size: 12px; padding: 5px 3px; }
-            
-            /* Buscador en columna */
-            .search-section { 
-                display: flex; 
-                flex-direction: column; 
-                gap: 10px; 
-                align-items: center; 
-            }
-            .search-input { width: 100%; max-width: 100%; margin: 0; }
-            .search-btn, .clear-btn { width: 100%; margin: 0; }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Consulta de notas</title>
+  <style>
+    :root{--azul:#0064bd;--gris:#6f7982;--fondo:#edf2f5;--texto:#111827}
+    *{box-sizing:border-box}body{margin:0;background:#f5f7f9;color:var(--texto);font-family:Arial,sans-serif}
+    .pagina{width:min(650px,100%);min-height:100vh;margin:auto;padding:26px 29px 30px;background:#fff;box-shadow:0 2px 18px #00000012}
+    .logo{display:block;width:min(519px,100%);height:182px;object-fit:contain;margin:0 auto 4px}
+    .separador{border:0;border-top:1px solid #d7dee3;margin:0 44px 20px}
+    .encabezado{text-align:center;font-weight:700;font-size:16px;line-height:1.4;margin-bottom:14px}
+    .consulta{margin-top:28px;padding:19px 28px;background:var(--fondo);border-radius:7px}
+    .consulta h2{font-size:16px;text-align:center;margin:0 0 12px}
+    .acciones{display:grid;grid-template-columns:1fr 111px 95px;gap:14px}
+    input,button{min-height:39px;border-radius:5px;font:inherit}input{width:100%;padding:8px 12px;border:1px solid #c8cdd2;font-size:15px}
+    button{border:0;color:#fff;font-weight:700;cursor:pointer;background:var(--azul)}button[type=button]{background:var(--gris)}button:hover{filter:brightness(.94)}
+    .mensaje{display:none;margin:12px 0 0;text-align:center;font-weight:700;color:#b42318}.resultado{display:none;margin-top:28px}
+    .datos{display:grid;grid-template-columns:130px 1fr;margin-bottom:23px}.datos strong,.datos span{min-height:31px;padding:6px 9px;border-bottom:1px solid #111}
+    .datos strong{padding-left:0;border-bottom-color:transparent}.datos span{border-left:1px solid #111;border-right:1px solid #111}.datos span:first-of-type{border-top:1px solid #111}
+    table{width:100%;border-collapse:collapse;margin-bottom:25px;table-layout:fixed}th,td{border:1px solid #111;padding:6px 9px;text-align:center}
+    th{background:#8d8d8d;color:#fff}td:first-child{text-align:left;font-weight:700}.definitiva{display:grid;grid-template-columns:66% 34%;align-items:center;font-weight:700}
+    .nota-final{width:100%;min-height:32px;border:1px solid #111;padding:6px 9px;display:flex;align-items:center;justify-content:center;font-size:16px}.perdida{color:#d00000;font-weight:700}
+    @media(max-width:560px){.pagina{width:100%;padding:14px 12px 22px;box-shadow:none}.logo{width:100%;height:128px}.separador{margin:0 4px 15px}.encabezado{font-size:14px;line-height:1.45}.consulta{margin-top:20px;padding:16px 12px}.consulta h2{font-size:15px}.acciones{grid-template-columns:1fr 1fr;gap:10px}.acciones input{grid-column:1/-1;font-size:16px}.resultado{margin-top:22px}.datos{grid-template-columns:105px minmax(0,1fr);font-size:13px;margin-bottom:18px}.datos strong,.datos span{padding:6px 5px;overflow-wrap:anywhere}table{font-size:13px;margin-bottom:20px}th,td{padding:7px 4px}.definitiva{font-size:14px}.nota-final{font-size:15px}}
+    @media(max-width:360px){.logo{height:110px}.acciones{grid-template-columns:1fr}.acciones input{grid-column:auto}.datos{grid-template-columns:92px minmax(0,1fr);font-size:12px}table{font-size:12px}}
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <!-- Cabecera visible desde el inicio -->
-    <div class="report-header">
-        <img src="https://raw.githubusercontent.com/orfell/Logos/main/LogoUnicomfacauca.png" alt="Logo Unicomfacauca" class="logo-img">
-        <hr class="logo-separator">
-        <div>Socialización de Notas - Período 2026-I</div>
-        <div>Formulación y Evaluación de Proyectos</div>
-        <div>Ingeniería de Sistemas</div>
-        <div>Julio Ricardo Martínez Montezuma</div>
-    </div>
-
-    <div class="search-section">
-        <h3>Consulta de Notas - Estudiantes</h3>
-        <input type="text" id="inputIdentificacion" class="search-input" placeholder="Ej: 1.058.966.757" onkeydown="verificarEnter(event)">
-        <button type="button" class="search-btn" onclick="buscarEstudiante()">Consultar</button>
-        <button type="button" class="clear-btn" onclick="limpiarBusqueda()">Limpiar</button>
-        <div id="errorMsg" class="error-message"></div>
-    </div>
-
-    <!-- Zona de Resultados de consulta -->
-    <div id="resultado-notas">
-        <div class="grid-info">
-            <div class="label">Identificación</div>
-            <div class="value-cell" id="lbl-id"></div>
-            <div class="label">Nombre</div>
-            <div class="value-cell" id="lbl-nombre"></div>
-            <div class="label">Programa:</div>
-            <div class="value-cell" id="lbl-programa"></div>
-        </div>
-
-        <div class="grid-notas">
-            <div class="nota-cell header-bg">Taller</div>
-            <div class="nota-cell header-bg">Nota</div>
-            <div class="nota-cell header-bg">%</div>
-            <div class="nota-cell header-bg">Acumulado</div>
-
-            <div class="nota-cell text-left">Taller C2S3</div>
-            <div class="nota-cell text-center" id="lbl-c2s3-v"></div>
-            <div class="nota-cell text-center">45,0%</div>
-            <div class="nota-cell text-center porcentaje-cell" id="lbl-c2s3-p"></div>
-
-            <div class="nota-cell text-left">Taller C2S5</div>
-            <div class="nota-cell text-center" id="lbl-c2s5-v"></div>
-            <div class="nota-cell text-center">45,0%</div>
-            <div class="nota-cell text-center porcentaje-cell" id="lbl-c2s5-p"></div>
-
-            <div class="nota-cell text-left">Faltas</div>
-            <div class="nota-cell text-center" id="lbl-asis-v"></div>
-            <div class="nota-cell text-center">10,0%</div>
-            <div class="nota-cell text-center porcentaje-cell" id="lbl-asis-p"></div>
-        </div>
-
-        <div class="grid-definitiva">
-            <div class="label">Definitiva</div>
-            <div class="definitiva-value" id="lbl-definitiva"></div>
-        </div>
-    </div>
-</div>
-
+<main class="pagina">
+  <img id="logo" class="logo" alt="Logo institucional">
+  <hr class="separador">
+  <header class="encabezado"><span id="titulo"></span><br><span id="periodo"></span><br><span id="asignatura"></span><br><span id="programa"></span><br><span id="docente"></span></header>
+  <hr class="separador">
+  <section class="consulta">
+    <h2>Consulta de Notas - Estudiantes</h2>
+    <form id="formulario" class="acciones">
+      <input id="documento" inputmode="numeric" autocomplete="off" placeholder="Ej: 1.058.966.757" aria-label="Documento de identificación">
+      <button type="submit">Consultar</button><button type="button" id="limpiar">Limpiar</button>
+    </form>
+    <p id="mensaje" class="mensaje" role="alert">Documento no encontrado</p>
+  </section>
+  <section id="resultado" class="resultado" aria-live="polite">
+    <div class="datos"><strong>Identificación</strong><span id="idSalida"></span><strong>Nombre</strong><span id="nombreSalida"></span><strong>Programa:</strong><span id="programaSalida"></span></div>
+    <table><colgroup><col style="width:33%"><col style="width:17%"><col style="width:16%"><col style="width:34%"></colgroup>
+      <thead><tr><th>Actividad</th><th>Nota</th><th>%</th><th>Acumulado</th></tr></thead><tbody id="filas"></tbody>
+    </table>
+    <div class="definitiva"><span>Definitiva</span><span id="definitiva" class="nota-final"></span></div>
+  </section>
+</main>
 <script>
-    var baseDatos = [
-        { identificacion: "1058966757", nombre: "ANACONA VELASQUEZ MIGUEL ANGEL", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,8", porcentaje: "1,71" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,6" },
-        { identificacion: "1058932230", nombre: "BARRERA TORRES JUAN DAVID", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,5", porcentaje: "1,58" }, asistencia: { valor: "2", porcentaje: "0,2" } }, definitiva: "2,2" },
-        { identificacion: "1063807451", nombre: "BARRIOS ORTEGA MARIA JOSE", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,8" },
-        { identificacion: "1022936723", nombre: "BUITRAGO MOLINA JAKSON ALEJANDRO", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,0", porcentaje: "1,35" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "2,3" },
-        { identificacion: "1003418409", nombre: "CALAMBAS SOSCUE HEIDY NATALIA", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,7" },
-        { identificacion: "1061713226", nombre: "CALDON FERNANDEZ JUAN SEBASTIAN", programa: "IS", notas: { c2s3: { valor: "5,0", porcentaje: "2,25" }, c2s5: { valor: "4,5", porcentaje: "2,03" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "4,8" },
-        { identificacion: "1061721516", nombre: "CAMPO MUNOZ EVELYN CAMILA", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,8" },
-        { identificacion: "1061684137", nombre: "DAZA FOCASUDEL DANIEL ENRIQUE", programa: "IS", notas: { c2s3: { valor: "4,0", porcentaje: "1,80" }, c2s5: { valor: "4,0", porcentaje: "1,80" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "4,0" },
-        { identificacion: "1061698151", nombre: "DIAGO SARRIA JOAN SEBASTIAN", programa: "IS", notas: { c2s3: { valor: "4,0", porcentaje: "1,80" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "2", porcentaje: "0,3" } }, definitiva: "4,0" },
-        { identificacion: "1002821349", nombre: "DIAZ DUQUE ANDRES FELIPE", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,8", porcentaje: "1,71" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,6" },
-        { identificacion: "1061702970", nombre: "GUERRERO PAZ LAURA CATALINA", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,5", porcentaje: "1,58" }, asistencia: { valor: "2", porcentaje: "0,2" } }, definitiva: "2,2" },
-        { identificacion: "1002968410", nombre: "GUTIERREZ LASSO JUAN JOSE", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,8", porcentaje: "1,71" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,5" },
-        { identificacion: "1059595893", nombre: "LIZ VALENCIA JULIAN ALBERTO", programa: "IS", notas: { c2s3: { valor: "5,0", porcentaje: "2,25" }, c2s5: { valor: "4,5", porcentaje: "2,03" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "4,8" },
-        { identificacion: "1002969467", nombre: "LOPEZ CHAGUENDO SEBASTIAN ", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,7" },
-        { identificacion: "1002966444", nombre: "MANQUILLO TOSE HEITAN SANTIAGO", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "2", porcentaje: "0,2" } }, definitiva: "3,5" },
-        { identificacion: "1061706353", nombre: "MEDINA TOBAR DANIEL ESTIBEN", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,0", porcentaje: "1,35" }, asistencia: { valor: "2", porcentaje: "0,3" } }, definitiva: "2,1" },
-        { identificacion: "1116914295", nombre: "PIRA SANCHEZ KEVIN ANDRES", programa: "IS", notas: { c2s3: { valor: "4,0", porcentaje: "1,80" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "2", porcentaje: "0,1" } }, definitiva: "3,8" },
-        { identificacion: "1005945616", nombre: "RICARDO QUINTERO YEISON STEVEN", programa: "IS", notas: { c2s3: { valor: "5,0", porcentaje: "2,25" }, c2s5: { valor: "4,5", porcentaje: "2,03" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "4,8" },
-        { identificacion: "1061696765", nombre: "RIVERA SOLARTE JULIAN ANDRES", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,0", porcentaje: "1,35" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "2,2" },
-        { identificacion: "1059236784", nombre: "RODRIGUEZ ILLERA MANUEL SANTIAGO", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,0", porcentaje: "1,35" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "2,3" },
-        { identificacion: "1002821756", nombre: "SANCHEZ CHAMORRO KEVIN ANDRES", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,8", porcentaje: "1,71" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,5" },
-        { identificacion: "1058547582", nombre: "TRUJILLO ORTEGA ANNY DAIANA", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,8" },
-        { identificacion: "1061699726", nombre: "VALENCIA NUNEZ CARLOS EDUARDO", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,8" },
-        { identificacion: "1002860532", nombre: "ALONSO ORTEGA EDWIN FERNANDO", programa: "IS", notas: { c2s3: { valor: "4,0", porcentaje: "1,80" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "2", porcentaje: "0,3" } }, definitiva: "4,0" },
-        { identificacion: "1087959622", nombre: "CARDENAS CAEZ HOLMAN ARLEY", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,5", porcentaje: "1,58" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,3" },
-        { identificacion: "1087960899", nombre: "CARDENAS CAEZ UBEIMAR SAMIR", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,5", porcentaje: "1,58" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,4" },
-        { identificacion: "1002855595", nombre: "CHANTRE POLANCO LUIS ALEJANDRO", programa: "IS", notas: { c2s3: { valor: "4,0", porcentaje: "1,80" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "4,1" },
-        { identificacion: "1061694812", nombre: "FLOR MOSQUERA JUAN MANUEL", programa: "IS", notas: { c2s3: { valor: "1,0", porcentaje: "0,45" }, c2s5: { valor: "3,7", porcentaje: "1,67" }, asistencia: { valor: "2", porcentaje: "0,3" } }, definitiva: "2,4" },
-        { identificacion: "1058976017", nombre: "GALINDEZ PERAFAN MARIA DEL CARMEN", programa: "IS", notas: { c2s3: { valor: "3,7", porcentaje: "1,67" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "4,1" },
-        { identificacion: "1061708101", nombre: "GARCIA LOPEZ JOSE ", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,0", porcentaje: "1,80" }, asistencia: { valor: "2", porcentaje: "0,2" } }, definitiva: "3,4" },
-        { identificacion: "1061821094", nombre: "GAVIRIA RAMIREZ DIEGO JOSE", programa: "IS", notas: { c2s3: { valor: "4,1", porcentaje: "1,85" }, c2s5: { valor: "3,8", porcentaje: "1,71" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "4,0" },
-        { identificacion: "1002876814", nombre: "GIL TAIMAL ALEX SANTIAGO", programa: "IS", notas: { c2s3: { valor: "3,7", porcentaje: "1,67" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "4,0" },
-        { identificacion: "1002969024", nombre: "MANQUILLO SANCHEZ JHON ALDEMAR", programa: "IS", notas: { c2s3: { valor: "4,1", porcentaje: "1,85" }, c2s5: { valor: "3,5", porcentaje: "1,58" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,9" },
-        { identificacion: "1002821013", nombre: "MEDINA CEBALLOS JULIAN DAVID", programa: "IS", notas: { c2s3: { valor: "4,1", porcentaje: "1,85" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "4,2" },
-        { identificacion: "1002777868", nombre: "MUNOZ ASTUDILLO JOSE FERNANDO", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,2", porcentaje: "1,44" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,2" },
-        { identificacion: "1058548207", nombre: "MUNOZ CALVACHE NIKOLE YAJAIRA", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,2", porcentaje: "1,44" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,3" },
-        { identificacion: "1058546109", nombre: "MUNOZ DELGADO DAVID ALEJANDRO", programa: "IS", notas: { c2s3: { valor: "4,1", porcentaje: "1,85" }, c2s5: { valor: "4,3", porcentaje: "1,94" }, asistencia: { valor: "2", porcentaje: "0,3" } }, definitiva: "4,1" },
-        { identificacion: "1002962697", nombre: "PALECHOR UNI VERONICA ", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,7" },
-        { identificacion: "1062318635", nombre: "PENCUE TALAGA JESUS YEISON", programa: "IS", notas: { c2s3: { valor: "4,1", porcentaje: "1,85" }, c2s5: { valor: "3,8", porcentaje: "1,71" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "4,1" },
-        { identificacion: "1061819448", nombre: "PERENGUEZ PAZ EDARSON SEBASTIAN", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,2", porcentaje: "1,44" }, asistencia: { valor: "2", porcentaje: "0,2" } }, definitiva: "3,0" },
-        { identificacion: "1002969372", nombre: "RUIZ RIVERA BRAYAN ESTIBEN", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,0", porcentaje: "1,80" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,7" },
-        { identificacion: "1002967237", nombre: "SOTELO RUIZ LUISA FERNANDA", programa: "IS", notas: { c2s3: { valor: "4,1", porcentaje: "1,85" }, c2s5: { valor: "4,0", porcentaje: "1,80" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "4,0" },
-        { identificacion: "1061706581", nombre: "TOBAR PAREDES JORGE ARMANDO", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "3,2", porcentaje: "1,44" }, asistencia: { valor: "1", porcentaje: "0,4" } }, definitiva: "3,2" },
-        { identificacion: "1059355070", nombre: "TORRES GOMEZ YUBELY LUCELY", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,2", porcentaje: "1,89" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,7" },
-        { identificacion: "1002968021", nombre: "YANGANA SALAZAR LAURA ISABEL", programa: "IS", notas: { c2s3: { valor: "3,0", porcentaje: "1,35" }, c2s5: { valor: "4,0", porcentaje: "1,80" }, asistencia: { valor: "0", porcentaje: "0,5" } }, definitiva: "3,7" }
-    ];
+/* EDITAR SOLO ESTE BLOQUE DE CONFIGURACIÓN Y DATOS. */
+const CONFIG={
+  titulo:"Socialización de Notas",
+  periodo:"Período 2026-II",
+  asignatura:"Formulación y evaluación de Proyectos",
+  programa:"Ingeniería de Sistemas",
+  codigoPrograma:"IS",
+  docente:"Julio Ricardo Martínez Montezuma",
+  logo:"https://campusvirtual.unicomfacauca.edu.co/pluginfile.php/46925/course/overviewfiles/CURVAS-Logo-acreditacio%CC%81n-institucional-2022-01-2.png",
+  actividades:[
+    {nombre:"C1S5",porcentaje:90}
+  ]
+};
+/* Formato por estudiante: "documento": {nombre, notas, acumulados, asistencia, definitiva}. */
+const ESTUDIANTES={
+  "1061700908":{nombre:"COBO ARBOLEDA DANIEL ALEXANDER",programa:"IS",notas:[3.9],acumulados:[3.5],asistencia:0.5,definitiva:4.0},
+  "1024477266":{nombre:"COLORADO CORAL JUAN ESTEBAN",programa:"IS",notas:[3.9],acumulados:[3.5],asistencia:0.4,definitiva:3.9},
+  "1061700009":{nombre:"GOMEZ RENGIFO CAMILA",programa:"IS",notas:[4.6],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1058932875":{nombre:"INSANDARA VIVEROS JUAN FELIPE",programa:"IS",notas:[4.4],acumulados:[3.9],asistencia:0.5,definitiva:4.4},
+  "1061708278":{nombre:"JOJOA BRAVO DANIEL",programa:"IS",notas:[4.1],acumulados:[3.7],asistencia:0.4,definitiva:4.1},
+  "1058932919":{nombre:"LONDOÑO CUELLAR MARIA ALEJANDRA",programa:"IS",notas:[4.1],acumulados:[3.6],asistencia:0.5,definitiva:4.1},
+  "1125408721":{nombre:"LOPEZ CARLOSAMA EYMER",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.5,definitiva:0.5},
+  "1061017172":{nombre:"MONTENEGRO RIVERA DANIELA ALEXANDRA",programa:"IS",notas:[4.4],acumulados:[3.9],asistencia:0.5,definitiva:4.4},
+  "1063808507":{nombre:"MUNOZ GARZON JUAN JOSE",programa:"IS",notas:[4.6],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1030020099":{nombre:"ORTIZ CRUZ JUAN CAMILO",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.5,definitiva:0.5},
+  "1032097334":{nombre:"ORTIZ GAVIRIA JOHNATAN",programa:"IS",notas:[4.6],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1061698194":{nombre:"PETEVI PILLIMUE YINED PAOLA",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.5,definitiva:0.5},
+  "1061688729":{nombre:"ROJAS BRAVO JUAN SEBASTIAN",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.4,definitiva:4.5},
+  "1058547406":{nombre:"SOLARTE TROCHEZ JUAN CAMILO",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.4,definitiva:4.5},
+  "1059234850":{nombre:"ZARAMA FERNANDEZ JULIAN DAVID",programa:"IS",notas:[4.4],acumulados:[3.9],asistencia:0.5,definitiva:4.4},
+  "1002968843":{nombre:"APONZA PENA JOSE HEBERT",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.4,definitiva:4.3},
+  "1061796779":{nombre:"AUSECHA FRANCO ALFREDO SAMIR",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1059235909":{nombre:"BELALCAZAR FLOR NICOLAS",programa:"IS",notas:[3.2],acumulados:[2.8],asistencia:0.4,definitiva:3.2},
+  "1110291130":{nombre:"CABEZAS SANCHEZ LAURA ISABEL",programa:"IS",notas:[3.7],acumulados:[3.3],asistencia:0.3,definitiva:3.6},
+  "1058727667":{nombre:"CAMPO PUYO CRISTIAN DAVID",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.5,definitiva:4.4},
+  "1058547462":{nombre:"CANOLA MUNOZ PAULA ISABELLA",programa:"IS",notas:[4.8],acumulados:[4.3],asistencia:0.4,definitiva:4.7},
+  "1062775441":{nombre:"CONEJO CONEJO HEILEN DANIELA",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1061690523":{nombre:"IDROBO DORADO JOSE ALEJANDRO",programa:"IS",notas:[3.4],acumulados:[3.1],asistencia:0.5,definitiva:3.6},
+  "1002968754":{nombre:"IDROBO TATIS JUAN MANUEL",programa:"IS",notas:[3.4],acumulados:[3.1],asistencia:0.5,definitiva:3.6},
+  "1058933037":{nombre:"LLANOS BERMEO JUAN FELIPE",programa:"IS",notas:[3.2],acumulados:[2.8],asistencia:0.4,definitiva:3.2},
+  "1061699542":{nombre:"MANQUILLO CABRERA GABRIEL ESTEBAN",programa:"IS",notas:[3.4],acumulados:[3.1],asistencia:0.3,definitiva:3.4},
+  "1058548122":{nombre:"MONTILLA GUERRERO MAICOL ESTIVEN",programa:"IS",notas:[3.9],acumulados:[3.5],asistencia:0.4,definitiva:3.9},
+  "1059235441":{nombre:"MUNOZ BRAVO ANDRES SANTIAGO",programa:"IS",notas:[3.7],acumulados:[3.3],asistencia:0.3,definitiva:3.6},
+  "1007225105":{nombre:"ORTIZ DIAZ JAVIER ANDRES",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1002777411":{nombre:"QUINAYAS IJAJI JUAN CARLOS",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.5,definitiva:4.4},
+  "1002805987":{nombre:"RUIZ CORDOBA ERLY YARITZA",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.5,definitiva:4.6},
+  "1059234940":{nombre:"SANCHEZ TORRES MARIA ISABELLA",programa:"IS",notas:[3.7],acumulados:[3.3],asistencia:0.4,definitiva:3.7},
+  "1002967562":{nombre:"TINTINAGO VALVERDE DANA SOFIA",programa:"IS",notas:[4.8],acumulados:[4.3],asistencia:0.5,definitiva:4.8},
+  "1007785345":{nombre:"VELASCO HURTADO LUIS FELIPE",programa:"IS",notas:[3.9],acumulados:[3.5],asistencia:0.4,definitiva:3.9},
+  "1059356139":{nombre:"VELASCO NOGUERA EWLER ANDREY",programa:"IS",notas:[4.8],acumulados:[4.3],asistencia:0.4,definitiva:4.7},
+  "1061530204":{nombre:"ANDRADE BELLO ARIANA MARCELA",programa:"IS",notas:[4.2],acumulados:[3.8],asistencia:0.2,definitiva:4.0},
+  "1002953120":{nombre:"BERMUDEZ EPE KENNY ELIUT",programa:"IS",notas:[3.2],acumulados:[2.9],asistencia:0.2,definitiva:3.1},
+  "1060881082":{nombre:"CADAVID BURBANO DERIAN LUBIER",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.2,definitiva:4.1},
+  "4612472":{nombre:"CAMPO ZUNIGA JOSE LUIS",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.2,definitiva:4.1},
+  "1061684233":{nombre:"CERON CERON CLAUDIA SOFIA",programa:"IS",notas:[4.1],acumulados:[3.6],asistencia:0.2,definitiva:3.8},
+  "1002980274":{nombre:"ECUE MERA DUVER ALEXANDER",programa:"IS",notas:[0.4],acumulados:[0.3],asistencia:0.2,definitiva:0.5},
+  "1061685345":{nombre:"HERRERA AREIZA JESUS DAVID",programa:"IS",notas:[3.1],acumulados:[2.8],asistencia:0.2,definitiva:3.0},
+  "1002807518":{nombre:"IMBACHI MOSCOSO DANEYDA ALEXANDRA",programa:"IS",notas:[4.2],acumulados:[3.8],asistencia:0.2,definitiva:4.0},
+  "1013098287":{nombre:"LADINO ACEVEDO CARLOS ANDRES",programa:"IS",notas:[3.1],acumulados:[2.8],asistencia:0.2,definitiva:3.0},
+  "1002819633":{nombre:"LUCUMI OROZCO CAROL MICHEL",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.2,definitiva:4.1},
+  "1003104187":{nombre:"MAMIAN GRANDE CHELSIN DAYANA",programa:"IS",notas:[3.2],acumulados:[2.9],asistencia:0.2,definitiva:3.1},
+  "1059236649":{nombre:"MANBUSCAY LLANTEN SEBASTIAN",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.1,definitiva:0.1},
+  "1061807477":{nombre:"MUSSE ORDONEZ CRISTIAN DAVID",programa:"IS",notas:[4.5],acumulados:[4.1],asistencia:0.1,definitiva:4.2},
+  "1089720501":{nombre:"NARANJO MONTOYA DANIELA",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.1,definitiva:4.0},
+  "1061734801":{nombre:"OJEDA PATINO ESNEIDER",programa:"IS",notas:[3.2],acumulados:[2.9],asistencia:0.2,definitiva:3.1},
+  "1014181584":{nombre:"PALADINEZ VARGAS JESUS EDUARDO",programa:"IS",notas:[3.4],acumulados:[3.0],asistencia:0.2,definitiva:3.2},
+  "1061818873":{nombre:"PALECHOR TINTINAGO MARIA FERNANDA",programa:"IA",notas:[4.1],acumulados:[3.6],asistencia:0.2,definitiva:3.8},
+  "1061819448":{nombre:"PERENGUEZ PAZ EDARSON SEBASTIAN",programa:"IS",notas:[4.3],acumulados:[3.9],asistencia:0.2,definitiva:4.1},
+  "1058546455":{nombre:"QUILINDO CHOCUE ASTRID CAROLINA",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.2,definitiva:0.2},
+  "1111479211":{nombre:"RESTREPO PATARROYO EMANUEL ESTEBAN",programa:"IS",notas:[4.2],acumulados:[3.8],asistencia:0.2,definitiva:4.0},
+  "1061772121":{nombre:"SEGOVIA OROZCO VICTOR HERNAN",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.1,definitiva:0.1},
+  "1059234076":{nombre:"VIDAL GONZALEZ JUAN MANUEL",programa:"IS",notas:[3.4],acumulados:[3.0],asistencia:0.2,definitiva:3.2},
+  "1061707554":{nombre:"YACUMAL RIVILLAS CRISTIAN DAVID",programa:"IS",notas:[0.0],acumulados:[0.0],asistencia:0.2,definitiva:0.2}
+};
 
-    function formatCedula(cedulaStr) {
-        return cedulaStr.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    // Mantenemos la lógica de formato para preservar los decimales como venían o aproximarlos según sea necesario
-    function formatUnDecimal(valorStr) {
-        if (!valorStr) return "0,0";
-        var num = parseFloat(valorStr.replace(',', '.'));
-        if (isNaN(num)) return valorStr;
-        // Para respetar los dos decimales que vienen de origen en los acumulados como 0,81 o 1,05
-        var decLength = (valorStr.split(',')[1] || "").length;
-        if(decLength > 1) {
-            return num.toFixed(2).replace('.', ',');
-        }
-        return num.toFixed(1).replace('.', ',');
-    }
-
-    function verificarEnter(event) {
-        if (event.key === "Enter" || event.keyCode === 13) {
-            event.preventDefault(); 
-            buscarEstudiante();
-        }
-    }
-
-    function getNotaClass(valorStr) {
-        var num = parseFloat(valorStr.replace(',', '.'));
-        if (isNaN(num)) return "nota-cell text-center";
-        if (num < 3.0) return "nota-cell text-center text-perdido";
-        if (num > 4.5) return "nota-cell text-center text-excelente";
-        return "nota-cell text-center";
-    }
-
-    function buscarEstudiante() {
-        var inputRaw = document.getElementById("inputIdentificacion").value;
-        var idBuscado = inputRaw.replace(/\D/g, ""); 
-        var divResultado = document.getElementById("resultado-notas");
-        var msgError = document.getElementById("errorMsg");
-
-        divResultado.style.display = "none";
-        msgError.style.display = "none";
-
-        if (idBuscado === "") {
-            msgError.innerText = "Ingresa una identificación válida.";
-            msgError.style.display = "block";
-            return;
-        }
-
-        var est = null;
-        for (var i = 0; i < baseDatos.length; i++) {
-            if (baseDatos[i].identificacion === idBuscado) {
-                est = baseDatos[i];
-                break;
-            }
-        }
-
-        if (!est) {
-            msgError.innerText = "Estudiante no encontrado.";
-            msgError.style.display = "block";
-            return;
-        }
-
-        document.getElementById("lbl-id").innerText = formatCedula(est.identificacion);
-        document.getElementById("lbl-nombre").innerText = est.nombre;
-        document.getElementById("lbl-programa").innerText = est.programa;
-
-        // Iteramos sobre los 2 talleres extraídos del nuevo archivo
-        var ids = ['c2s3', 'c2s5'];
-        for(var j=0; j < ids.length; j++) {
-            var key = ids[j];
-            var valStr = est.notas[key].valor;
-            var elem = document.getElementById("lbl-" + key + "-v");
-            elem.innerText = valStr;
-            elem.className = getNotaClass(valStr);
-            document.getElementById("lbl-" + key + "-p").innerText = formatUnDecimal(est.notas[key].porcentaje);
-        }
-
-        var faltasRaw = est.notas.asistencia.valor;
-        document.getElementById("lbl-asis-v").innerText = parseInt(faltasRaw) || 0;
-        document.getElementById("lbl-asis-p").innerText = formatUnDecimal(est.notas.asistencia.porcentaje);
-        
-        var defStr = est.definitiva;
-        var defElem = document.getElementById("lbl-definitiva");
-        defElem.innerText = defStr;
-        
-        var defNum = parseFloat(defStr.replace(',', '.'));
-        if (defNum < 3.0) {
-            defElem.className = "definitiva-value text-perdido";
-        } else if (defNum > 4.5) {
-            defElem.className = "definitiva-value text-excelente";
-        } else {
-            defElem.className = "definitiva-value";
-        }
-
-        divResultado.style.display = "block";
-    }
-
-    function limpiarBusqueda() {
-        var input = document.getElementById("inputIdentificacion");
-        input.value = "";
-        document.getElementById("resultado-notas").style.display = "none";
-        document.getElementById("errorMsg").style.display = "none";
-        input.focus(); 
-    }
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:2});
+const fmtId=id=>id.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const faltasPorAcumulado={"0.5":0,"0.4":1,"0.3":2,"0.2":3,"0.1":4,"0.0":5};
+function iniciar(){document.title=`Consulta de notas — ${CONFIG.asignatura}`;$('logo').src=CONFIG.logo;$('titulo').textContent=CONFIG.titulo;$('periodo').textContent=CONFIG.periodo;$('asignatura').textContent=CONFIG.asignatura;$('programa').textContent=CONFIG.programa;$('docente').textContent=CONFIG.docente}
+function ocultar(){$('resultado').style.display='none';$('mensaje').style.display='none'}
+function fila(celdas){const tr=document.createElement('tr');celdas.forEach((valor,i)=>{const td=document.createElement('td');td.textContent=valor;if(i===1&&Number(valor.replace?.(',','.'))<3)td.classList.add('perdida');tr.appendChild(td)});return tr}
+$('formulario').addEventListener('submit',e=>{e.preventDefault();const id=$('documento').value.replace(/\D/g,''),d=ESTUDIANTES[id];ocultar();if(!d){$('mensaje').style.display='block';return}
+  $('idSalida').textContent=fmtId(id);$('nombreSalida').textContent=d.nombre;$('programaSalida').textContent=d.programa||CONFIG.codigoPrograma;$('filas').replaceChildren();
+  CONFIG.actividades.forEach((a,i)=>$('filas').appendChild(fila([a.nombre,fmt(d.notas[i]),`${fmt(a.porcentaje)}%`,fmt(d.acumulados[i])])));
+  $('filas').appendChild(fila(['Faltas',String(faltasPorAcumulado[Number(d.asistencia).toFixed(1)]),'10%',fmt(d.asistencia)]));
+  $('definitiva').textContent=fmt(d.definitiva);$('definitiva').classList.toggle('perdida',d.definitiva<3);$('resultado').style.display='block'
+});
+$('limpiar').addEventListener('click',()=>{$('documento').value='';ocultar();$('documento').focus()});
+iniciar();
 </script>
-
 </body>
 </html>
